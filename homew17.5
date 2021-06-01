@@ -1,0 +1,22 @@
+import pandas as pd
+
+from scipy.stats import ttest_ind
+
+df = pd.read_pickle("bc_data.pkl")
+ann = pd.read_pickle("bc_ann.pkl")
+
+Train = df.loc[ann.loc[ann["Dataset type"] == "Training"].index]
+Test = df.loc[ann.loc[ann["Dataset type"] == "Validation"].index]
+T_st = ttest_ind(Train, Test)
+print(len(T_st[1]))
+s = []
+for i in range(len(T_st[1])):
+   if T_st[1][i] > 0.05:
+        s.append(T_st[1][i])
+print(len(s))
+print('Доля=', len(s)/len(T_st[1]))
+
+#Результат:
+#7762
+#3101
+#Доля= 0.3995104354547797
