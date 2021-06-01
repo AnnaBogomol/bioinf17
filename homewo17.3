@@ -1,0 +1,29 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, balanced_accuracy_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RepeatedStratifiedKFold
+
+df = pd.read_csv("BRCA_pam50.tsv", sep="\t", index_col=0)
+
+X = df.drop('Subtype', axis=1).to_numpy()
+y = df['Subtype'].to_numpy()
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.8, random_state = 17, stratify=y)
+
+#parameters = {'n_estimators': range (46, 47),
+#   'max_depth'         : range (75, 76)}
+
+model = GridSearchCV(RandomForestClassifier(), parameters, cv=RepeatedStratifiedKFold(n_repeats=10))
+model.fit(X_train, y_train)
+y_pred = model.predict(X_train)
+train_BA = balanced_accuracy_score(y_train, y_pred)
+
+y_pred = model.predict(X_test)
+test_BA = balanced_accuracy_score(y_test, y_pred)
+print(test_BA)
+print(model.best_params_)
+
+0.7363556284720828
+{'max_depth': 75, 'n_estimators': 46}
